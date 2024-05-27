@@ -16,6 +16,7 @@ extensions = [
 ]
 
 # Check if user is me (adam.2006)
+# This is for testing purposes only
 def is_me():
     def predicate(ctx):
         return ctx.message.author.id == 424970840015110145
@@ -26,12 +27,15 @@ class TestBot(commands.Bot):
         super().__init__(command_prefix=command_prefix, intents=intents)
 
     async def setup_hook(self) -> None:
+        # Load all required extensions
         for ext in extensions:
             await self.load_extension(ext)
             print(f'loaded extension {ext}')
     
     async def on_ready(self):
         print(f'logged in as {self.user}')
+
+        # Sync all app commands
         try:
             synced = await self.tree.sync()
             print(f'synced {len(synced)} commands: {[cmd.name for cmd in synced]}')
@@ -45,13 +49,14 @@ intents.guilds = True
 testbot = TestBot(command_prefix=';', intents=intents)
 
 # Debug commands
-
+# Sync commands for guild (doesn't work currently)
 @testbot.command(name='sync')
 @is_me()
 async def _sync(ctx, guild: discord.Guild):
     synced = await testbot.tree.sync(guild=guild)
     print(f'synced {len(synced)} commands manually: {[cmd.name for cmd in synced]}')
 
+# Reload specified module
 @testbot.command(name='reload')
 @is_me()
 async def _reload(ctx, extension: str):
@@ -63,5 +68,6 @@ async def _reload(ctx, extension: str):
         print(e)
     else:
         await ctx.send(f'Reloaded extension `{extension}`')
+        print(f'reloaded {extension}')
 
 testbot.run(TOKEN)
