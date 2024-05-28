@@ -2,14 +2,11 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import os
+import datetime
 import time
-from datetime import timedelta
-from math import floor
 
 load_dotenv()
 TOKEN = os.getenv('BOT_TOKEN')
-
-start_time = time.monotonic()
 
 extensions = [
     'testbot_commands'
@@ -25,6 +22,11 @@ def is_me():
 class TestBot(commands.Bot):
     def __init__(self, command_prefix, intents):
         super().__init__(command_prefix=command_prefix, intents=intents)
+
+        # Get the start date (for displaying)
+        self.start_time = datetime.datetime.now()
+        # Used to count the bot's uptime
+        self.monotonic_start_time = time.monotonic()
 
     async def setup_hook(self) -> None:
         # Load all required extensions

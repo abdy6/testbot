@@ -1,6 +1,9 @@
 from discord.ext import commands
 from discord import app_commands
 import discord
+import time
+import datetime
+import math
 
 # Check if the user is me (adam.2006)
 # Testing purposes
@@ -8,6 +11,7 @@ def is_me():
     def predicate(ctx):
         return ctx.message.author.id == 424970840015110145
     return commands.check(predicate)
+
 
 class TestBotCommands(commands.Cog):
     def __init__(self, bot) -> None:
@@ -48,6 +52,19 @@ class TestBotCommands(commands.Cog):
             ctx.reply("There was an error, check logs for more info.")
         else:
             print(f'sent msg "{message}" in channel {channel}')
+
+    # Send the bot's start time and uptime in an embed
+    @commands.hybrid_command(name='uptime', description='Get bot uptime')
+    async def uptime(self, ctx):
+        uptime_seconds = math.floor(time.monotonic() - self.bot.monotonic_start_time)
+        embed = discord.Embed(title='Bot uptime')
+        embed.description = f'''__Start time:__ <t:{math.floor(self.bot.start_time.timestamp())}>
+        
+        __Uptime:__ {datetime.timedelta(seconds=uptime_seconds)}
+        __in seconds:__ {uptime_seconds}'''
+        embed.set_footer(text=f'called by {ctx.author.name}', icon_url=ctx.author.avatar.url)
+        await ctx.send(embed=embed)
+
 
 
 async def setup(bot):
